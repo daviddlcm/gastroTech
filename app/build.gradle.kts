@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.jetbrainsKotlinSerialization)
+
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -58,7 +60,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-
+    implementation(libs.androidx.material.icons.extended.v150) // Iconos
     implementation(libs.androidx.compose.runtime.livedata) //LiveData
     implementation(libs.com.squareup.retrofit2.retrofit)
     implementation(libs.com.squareup.retrofit2.converter.json)
@@ -67,7 +69,16 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)     // ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
-
+    implementation(libs.io.coil.kt.coil.compose)
     implementation("androidx.datastore:datastore-preferences:1.1.2")
+
+
+
+    // Firebase
+    implementation(libs.firebase.messaging)
+    implementation(libs.google.firebase.analytics)
+    implementation(platform(libs.firebase.bom.v3280))
+    implementation(libs.firebase.auth)
+
 
 }

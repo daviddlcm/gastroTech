@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "19978128977",
+    "project_id": "gastrotech-c750c",
+    "storage_bucket": "gastrotech-c750c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:19978128977:android:01e2a55ad257ae13e5b270",
+        "android_client_info": {
+          "package_name": "com.example.gastrotech"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3jeBzFCdn825l5ttHLiqQBPVtAwvDFKA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

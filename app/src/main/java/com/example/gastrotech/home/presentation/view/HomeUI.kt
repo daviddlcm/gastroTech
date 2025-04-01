@@ -1,6 +1,6 @@
-package com.example.gastrotech.home.presentation
+package com.example.gastrotech.home.presentation.view
 
-import android.view.View
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.R
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -24,23 +23,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import com.example.gastrotech.home.data.model.Comida
+import com.example.gastrotech.home.data.model.ComidaRequest
+import com.example.gastrotech.home.presentation.viewModel.HomeViewModel
 
 
 @Composable
 fun HomeScreen(homeViewModel: HomeViewModel) {
-    val comidas: List<Comida> by homeViewModel.comidas.observeAsState(emptyList())
+    val isLoading by homeViewModel.isLoading.observeAsState(false)
+    val comidas by homeViewModel.comidas.observeAsState(emptyList())
+
+    Log.d("HomeMoviesScreen", "Películas obtenidas Home: ${comidas}")
+
     LaunchedEffect(Unit) {
         homeViewModel.onGetMenu()
     }
@@ -49,12 +50,12 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
             .fillMaxSize()
             .padding(7.dp)
     ) {
-        Home(comidas)
+        Home(comidas, isLoading)
     }
 }
 
 @Composable
-fun Home(comidas: List<Comida>) {
+fun Home(comidas: List<ComidaRequest>, isLoading: Boolean) {
 
     Column {
         Spacer(modifier = Modifier.padding(10.dp))
@@ -64,7 +65,22 @@ fun Home(comidas: List<Comida>) {
         Spacer(modifier = Modifier.padding(10.dp))
         Text(text = "Menu", fontWeight = FontWeight.Bold, fontSize = 30.sp)
         Spacer(modifier = Modifier.padding(2.dp))
-        ShowMenu(comidas = comidas)
+        if (isLoading){
+            Text(
+                "Cargando comidas.....",
+                color = Color.Black
+            )
+        } else {
+            if (comidas.isNotEmpty()) {
+                ShowMenu(comidas = comidas)
+            } else{
+                Text(
+                    text = "No hay comidas disponibles",
+                    color = Color.Black
+                )
+            }
+        }
+
     }
 }
 
@@ -95,7 +111,7 @@ fun MainPromotionImg() {
 }
 
 @Composable
-fun ShowMenu(comidas: List<Comida>) {
+fun ShowMenu(comidas: List<ComidaRequest>) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
@@ -111,7 +127,7 @@ fun ShowMenu(comidas: List<Comida>) {
 }
 
 @Composable
-fun CardFood(comida: Comida) {
+fun CardFood(comida: ComidaRequest) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -128,7 +144,7 @@ fun CardFood(comida: Comida) {
             Column(
                 modifier = Modifier.padding(10.dp)
             ) {
-                Text(text = comida.nombre, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                Text(text = comida.nombre_producto, fontWeight = FontWeight.Bold, fontSize = 20.sp)
                 Spacer(modifier = Modifier.padding(5.dp))
                 Text(text = "$ ${comida.precio}")
             }
