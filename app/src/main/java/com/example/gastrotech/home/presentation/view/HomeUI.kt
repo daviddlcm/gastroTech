@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -38,6 +40,7 @@ import com.example.gastrotech.home.data.model.ComidaRequest
 import com.example.gastrotech.home.presentation.viewModel.HomeViewModel
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.painter.Painter
+import com.example.gastrotech.carts.presentation.viewModel.CartViewModel
 
 
 @Composable
@@ -140,28 +143,42 @@ fun CardFood(comida: ComidaRequest) {
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(8.dp)
     ) {
-        Column(
+        Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            val imagePainter: Painter = rememberAsyncImagePainter(model = comida.imagen)
-
-            Image(
-                painter = imagePainter,
-                contentDescription = "Imagen de comida",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp),
-                contentScale = ContentScale.Crop
-            )
-
             Column(
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier.fillMaxSize()
             ) {
-                Text(text = comida.nombre_producto, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                Spacer(modifier = Modifier.height(5.dp))
-                Text(text = "$ ${comida.precio}")
+                val imagePainter: Painter = rememberAsyncImagePainter(model = comida.imagen)
+
+                Image(
+                    painter = imagePainter,
+                    contentDescription = "Imagen de comida",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp),
+                    contentScale = ContentScale.Crop
+                )
+
+                Column(
+                    modifier = Modifier.padding(10.dp)
+                ) {
+                    Text(text = comida.nombre_producto, fontWeight = FontWeight.Bold, fontSize = 17.sp)
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Text(text = "$ ${comida.precio}")
+                }
             }
+
+            Text(
+                text = "Agregar",
+                color = Color.Blue,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp,
+                modifier = Modifier
+                    .align(androidx.compose.ui.Alignment.BottomEnd)
+                    .padding(12.dp)
+                    .clickable {  }
+            )
         }
     }
 }
-

@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import com.example.gastrotech.account.presentation.view.AccountScreen
 import com.example.gastrotech.account.presentation.viewModel.LoginViewModel
 import com.example.gastrotech.carts.presentation.view.CartScreen
+import com.example.gastrotech.carts.presentation.viewModel.CartViewModel
 import com.example.gastrotech.core.domain.constans.Routes
 import com.example.gastrotech.home.presentation.view.HomeScreen
 import com.example.gastrotech.home.presentation.viewModel.HomeViewModel
