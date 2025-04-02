@@ -23,11 +23,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,18 +46,37 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.gastrotech.register.presentation.viewModel.RegisterViewModel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
-fun RegisterScreen(onNavigate: () -> Unit) {
+fun RegisterScreen(registerViewModel: RegisterViewModel, onNavigate: () -> Unit) {
 
-    var nombre by remember { mutableStateOf("") }
-    var apellidos by remember { mutableStateOf("") }
-    var contraseña by  remember { mutableStateOf("") }
-    var correo by remember { mutableStateOf("") }
-    var teléfono by remember { mutableStateOf("") }
+    val nombre by registerViewModel.nombre.observeAsState("")
+    val apellidos by registerViewModel.apellido.observeAsState("")
+    val correo by registerViewModel.correo.observeAsState("")
+    val contraseña by registerViewModel.contraseña.observeAsState("")
+    val teléfono by registerViewModel.teléfono.observeAsState("")
+    val isLoading by registerViewModel.isLoading.observeAsState(false)
+    val errorMessage by registerViewModel.errorMessage.observeAsState(null)
+    val isRegistered by registerViewModel.isRegistered.observeAsState(false)
     var isVisible by remember { mutableStateOf(false) }
 
-    var isButtonEnabled = nombre.isNotBlank() && apellidos.isNotBlank() && contraseña.isNotBlank() && correo.isNotBlank() && teléfono.isNotBlank()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(isRegistered) {
+        if (isRegistered){
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("Cuenta creada con exito")
+                onNavigate()
+            }
+        }
+    }
+
 
     Column(
         modifier = Modifier
@@ -60,38 +85,57 @@ fun RegisterScreen(onNavigate: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        SnackbarHost(hostState = snackbarHostState) { data ->
+            Snackbar(
+                snackbarData = data,
+                containerColor = Color(0xFF4CAF50),
+                contentColor = Color.White,
+                shape = RoundedCornerShape(12.dp)
+            )
+        }
+
         TitleText()
         Spacer(modifier = Modifier.height(16.dp))
         NombreField(
             nombre = nombre,
-            onNombreChange = { nombre = it}
+            onNombreChange = { registerViewModel.onNombreChanged(it)}
         )
         Spacer(modifier = Modifier.height(8.dp))
         ApellidosField(
             apellidos = apellidos,
-            onApellidosChange = { apellidos = it}
+            onApellidosChange = { registerViewModel.onApellidoChanged(it)}
         )
         Spacer(modifier = Modifier.height(16.dp))
         CorreoField(
             correo = correo,
-            onCorreoChange = { correo = it}
+            onCorreoChange = { registerViewModel.onCorreoChanged(it)}
         )
         Spacer(modifier = Modifier.height(16.dp))
         ContraseñaField(
             contraseña = contraseña,
-            onContraseñahange = { contraseña = it},
+            onContraseñahange = { registerViewModel.onContraseñaChanged(it)},
             isVisible = isVisible,
             onVisibilityChange = { isVisible = !isVisible}
         )
         Spacer(modifier = Modifier.height(16.dp))
         TelefonoField(
             teléfono = teléfono,
-            onTeléfonoChange = { teléfono = it}
+            onTeléfonoChange = { registerViewModel.onTelefonoChanged(it)}
         )
         Spacer(modifier = Modifier.height(16.dp))
-        LoginButton(isButtonEnabled,  onLoginSuccessClick = {
 
-        })
+        errorMessage?.let {
+            Text(
+                text = it,
+                color = Color.Red,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
+        LoginButton(
+            isLoading = isLoading,
+            onLoginSuccessClick = {registerViewModel.onRegisterClicked()}
+        )
         Spacer(modifier = Modifier.height(16.dp))
         BottonAction(onRegisterClick = onNavigate)
 
@@ -264,12 +308,12 @@ fun TelefonoField(
 
 @Composable
 fun LoginButton(
-    isButtonEnabled: Boolean,
+    isLoading: Boolean,
     onLoginSuccessClick: () -> Unit
 ) {
     Button(
         onClick = onLoginSuccessClick,
-        enabled = isButtonEnabled,
+        enabled = !isLoading,
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp),

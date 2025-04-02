@@ -1,5 +1,8 @@
 package com.example.gastrotech.account.presentation.view
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,7 +26,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,17 +43,43 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.gastrotech.account.presentation.viewModel.LoginViewModel
+import kotlinx.coroutines.delay
 
 @Composable
-fun AccountScreen(onNavigate: () -> Unit, onNavigateHome: () -> Unit, isLoggedIn: Boolean, onLoginChange: (Boolean) -> Unit) {
-    var correo by remember { mutableStateOf("") }
-    var contraseña by remember { mutableStateOf("") }
+fun AccountScreen(loginViewModel: LoginViewModel, onNavigate: () -> Unit, onNavigateHome: () -> Unit, isLoggedIn: Boolean, onLoginChange: (Boolean) -> Unit) {
+    val correo by loginViewModel.correo.observeAsState("")
+    val contraseña by loginViewModel.contraseña.observeAsState("")
+    val isLoading by loginViewModel.isLoading.observeAsState(false)
+    val errorMessage by loginViewModel.errorMessage.observeAsState(null)
+    val viewModelLoggedIn by loginViewModel.isLoggedIn.observeAsState(false)
     var isPasswordVisible by remember { mutableStateOf(false) }
+    var showError by remember { mutableStateOf(false) }
 
-    if (isLoggedIn){
+    val isUserLoggedIn = viewModelLoggedIn || isLoggedIn
+
+    LaunchedEffect(viewModelLoggedIn) {
+        if (viewModelLoggedIn) {
+            onLoginChange(true)
+            onNavigateHome()
+        }
+    }
+
+
+    LaunchedEffect(errorMessage) {
+        if (errorMessage != null) {
+            showError = true
+            delay(1000) // 1 segundo
+            showError = false
+            loginViewModel.clearError()
+        }
+    }
+
+
+    if (isUserLoggedIn){
         LoggedInView(
-            //correo = correo,
             onLogout = {
+                loginViewModel.logout()
                 onLoginChange(false)
             }
         )
@@ -64,21 +95,32 @@ fun AccountScreen(onNavigate: () -> Unit, onNavigateHome: () -> Unit, isLoggedIn
             Spacer(modifier = Modifier.height(16.dp))
             EmailField(
                 correo = correo,
-                onCorreoChange = { contraseña = it}
+                onCorreoChange = { loginViewModel.onCorreoChanged(it)}
             )
             Spacer(modifier = Modifier.height(5.dp))
             PasswordField(
                 contraseña = contraseña,
-                onContraseñaChange = { contraseña = it},
+                onContraseñaChange = { loginViewModel.onContraseñaChanged(it)},
                 isPasswordVisible = isPasswordVisible,
                 onPasswordVisibilityChange = {isPasswordVisible = !isPasswordVisible}
             )
             Spacer(modifier = Modifier.height(24.dp))
+
+            AnimatedVisibility(
+                visible = errorMessage != null,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Text(
+                    text = errorMessage ?: "",
+                    color = Color.Red,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(5.dp))
             LoginButton(
-                onLoginSuccessClick = {
-                    onLoginChange(true)
-                    onNavigateHome()
-                }
+                isLoading = isLoading,
+                onLoginSuccessClick = { loginViewModel.onLoginClicked()}
             )
             Spacer(modifier = Modifier.height(24.dp))
             RegisterLink(onRegisterClick = {onNavigate()})
@@ -160,7 +202,7 @@ fun PasswordField(
 }
 
 @Composable
-fun LoginButton(onLoginSuccessClick: () -> Unit) {
+fun LoginButton(isLoading: Boolean, onLoginSuccessClick: () -> Unit) {
     Button(
         onClick = onLoginSuccessClick,
         modifier = Modifier
@@ -170,14 +212,15 @@ fun LoginButton(onLoginSuccessClick: () -> Unit) {
             containerColor = Color.Black,
             contentColor = Color.White
         ),
-        shape = RoundedCornerShape(10.dp)
+        shape = RoundedCornerShape(10.dp),
+        enabled = !isLoading
     ) {
-        Text(
-            text = "Iniciar Sesión",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }
+        if (isLoading) {
+            Text("Cargando...", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        } else {
+            Text("Iniciar Sesión", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+        }
+        }
 }
 
 @Composable

@@ -8,12 +8,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import com.example.gastrotech.account.presentation.view.AccountScreen
+import com.example.gastrotech.account.presentation.viewModel.LoginViewModel
 import com.example.gastrotech.carts.presentation.view.CartScreen
 import com.example.gastrotech.core.domain.constans.Routes
 import com.example.gastrotech.home.presentation.view.HomeScreen
 import com.example.gastrotech.home.presentation.viewModel.HomeViewModel
 import com.example.gastrotech.orders.presentation.view.OrdersScreen
 import com.example.gastrotech.register.presentation.view.RegisterScreen
+import com.example.gastrotech.register.presentation.viewModel.RegisterViewModel
 import com.example.gastrotech.ui.navbar.NavBar
 
 @Composable
@@ -35,6 +37,7 @@ fun IndexRouter(
             when(route.value){
                 Routes.HomeRoute.route -> HomeScreen(homeViewModel = homeVM)
                 Routes.AccountRoute.route -> AccountScreen(
+                    loginViewModel = LoginViewModel(),
                     onNavigate = { route.value = Routes.RegisterRoute.route},
                     onNavigateHome = {
                         isLoggedIn.value = true
@@ -45,7 +48,10 @@ fun IndexRouter(
                 )
                 Routes.CartRoute.route -> if (isLoggedIn.value) CartScreen()
                 Routes.OrdersRoute.route -> if (isLoggedIn.value) OrdersScreen()
-                Routes.RegisterRoute.route -> RegisterScreen(onNavigate = { route.value = Routes.AccountRoute.route})
+                Routes.RegisterRoute.route -> RegisterScreen(
+                    registerViewModel = RegisterViewModel(),
+                    onNavigate = { route.value = Routes.AccountRoute.route}
+                )
             }
         }
 

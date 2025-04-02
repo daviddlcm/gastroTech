@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -31,8 +32,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.example.gastrotech.home.data.model.ComidaRequest
 import com.example.gastrotech.home.presentation.viewModel.HomeViewModel
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.painter.Painter
 
 
 @Composable
@@ -40,7 +45,6 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
     val isLoading by homeViewModel.isLoading.observeAsState(false)
     val comidas by homeViewModel.comidas.observeAsState(emptyList())
 
-    Log.d("HomeMoviesScreen", "Películas obtenidas Home: ${comidas}")
 
     LaunchedEffect(Unit) {
         homeViewModel.onGetMenu()
@@ -126,28 +130,38 @@ fun ShowMenu(comidas: List<ComidaRequest>) {
     }
 }
 
+
 @Composable
 fun CardFood(comida: ComidaRequest) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1f),
+        shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(8.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
+            val imagePainter: Painter = rememberAsyncImagePainter(model = comida.imagen)
+
             Image(
-                painter = painterResource(id = com.example.gastrotech.R.drawable.burguer),
-                contentDescription = "Comida",
+                painter = imagePainter,
+                contentDescription = "Imagen de comida",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
+                contentScale = ContentScale.Crop
             )
+
             Column(
                 modifier = Modifier.padding(10.dp)
             ) {
                 Text(text = comida.nombre_producto, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                Spacer(modifier = Modifier.padding(5.dp))
+                Spacer(modifier = Modifier.height(5.dp))
                 Text(text = "$ ${comida.precio}")
             }
         }
     }
 }
+
