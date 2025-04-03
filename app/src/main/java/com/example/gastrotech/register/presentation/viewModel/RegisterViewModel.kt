@@ -11,7 +11,6 @@ import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
 
 class RegisterViewModel: ViewModel() {
-    private val repository = RegisterRepository()
     private val registerUseCase = RegisterUseCase()
 
     private val _nombre = MutableLiveData<String>("")

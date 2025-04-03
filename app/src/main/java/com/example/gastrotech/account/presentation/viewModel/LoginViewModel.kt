@@ -1,5 +1,6 @@
 package com.example.gastrotech.account.presentation.viewModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -52,6 +53,7 @@ class LoginViewModel: ViewModel() {
                     AuthManager.setToken(it.token)
                     AuthManager.setUserId(it.id_cliente)
                     _isLoggedIn.value = true
+                    Log.d("LoginState", "isLoggedIn = $_isLoggedIn")
                 },
                 onFailure = {
                     _errorMessage.value = it.message

@@ -25,7 +25,7 @@ fun NavBar(route: MutableState<String>, isLoggedIn: Boolean) {
             .fillMaxWidth()
     ) {
         for (page in Routes.pages) {
-            if (page.route == Routes.CartRoute.route || page.route == Routes.OrdersRoute.route) {
+            if (page.route == Routes.OrdersRoute.route) {
                 if (isLoggedIn) {
                     ItemBar(
                         page,

@@ -14,9 +14,9 @@ object Routes {
 
     val HomeRoute = NavItem("Home","home",Icons.Outlined.Home)
     val AccountRoute = NavItem("Account","account",Icons.Outlined.AccountCircle)
-    val CartRoute = NavItem("Cart", "cart", Icons.Outlined.ShoppingBag)
+    //val CartRoute = NavItem("Cart", "cart", Icons.Outlined.ShoppingBag)
     val OrdersRoute = NavItem("Orders", "orders", Icons.Outlined.Receipt)
     val RegisterRoute = NavItem("Register", "register", Icons.Outlined.AccountCircle)
 
-    val pages = listOf<NavItem>(HomeRoute, AccountRoute, CartRoute, OrdersRoute)
+    val pages = listOf<NavItem>(HomeRoute, AccountRoute, OrdersRoute)
 }

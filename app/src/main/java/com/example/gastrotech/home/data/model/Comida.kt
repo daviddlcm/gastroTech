@@ -1,8 +1,7 @@
 package com.example.gastrotech.home.data.model
 
 import com.google.gson.annotations.SerializedName
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+
 
 data class ComidaRequest(
     val id_producto: Int,

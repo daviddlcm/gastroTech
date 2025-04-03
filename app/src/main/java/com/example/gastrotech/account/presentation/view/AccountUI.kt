@@ -69,7 +69,7 @@ fun AccountScreen(loginViewModel: LoginViewModel, onNavigate: () -> Unit, onNavi
     LaunchedEffect(errorMessage) {
         if (errorMessage != null) {
             showError = true
-            delay(1000) // 1 segundo
+            delay(1000)
             showError = false
             loginViewModel.clearError()
         }

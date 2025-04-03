@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -26,6 +25,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -34,20 +37,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.gastrotech.home.data.model.ComidaRequest
 import com.example.gastrotech.home.presentation.viewModel.HomeViewModel
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.painter.Painter
-import com.example.gastrotech.carts.presentation.viewModel.CartViewModel
+import com.example.gastrotech.R
+import com.example.gastrotech.confirmOrders.presentation.view.ConfirmDialog
+import com.example.gastrotech.confirmOrders.presentation.viewModel.ConfirmOrdersViewModel
 
 
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel) {
+fun HomeScreen(homeViewModel: HomeViewModel, confirmOrdersViewModel: ConfirmOrdersViewModel) {
     val isLoading by homeViewModel.isLoading.observeAsState(false)
     val comidas by homeViewModel.comidas.observeAsState(emptyList())
-
 
     LaunchedEffect(Unit) {
         homeViewModel.onGetMenu()
@@ -57,12 +60,12 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
             .fillMaxSize()
             .padding(7.dp)
     ) {
-        Home(comidas, isLoading)
+        Home(comidas, isLoading, confirmOrdersViewModel)
     }
 }
 
 @Composable
-fun Home(comidas: List<ComidaRequest>, isLoading: Boolean) {
+fun Home(comidas: List<ComidaRequest>, isLoading: Boolean, confirmOrdersViewModel: ConfirmOrdersViewModel) {
 
     Column {
         Spacer(modifier = Modifier.padding(10.dp))
@@ -79,7 +82,7 @@ fun Home(comidas: List<ComidaRequest>, isLoading: Boolean) {
             )
         } else {
             if (comidas.isNotEmpty()) {
-                ShowMenu(comidas = comidas)
+                ShowMenu(comidas = comidas, confirmOrdersViewModel)
             } else{
                 Text(
                     text = "No hay comidas disponibles",
@@ -112,13 +115,13 @@ fun MainPromotionImg() {
             shape = RoundedCornerShape(16.dp)
         )
             .border(2.dp, Color.White, shape = RoundedCornerShape(16.dp)),
-        painter = painterResource(id = com.example.gastrotech.R.drawable.burguer),
+        painter = painterResource(id = R.drawable.burguer),
         contentDescription = "Imagen de promoción",
     )
 }
 
 @Composable
-fun ShowMenu(comidas: List<ComidaRequest>) {
+fun ShowMenu(comidas: List<ComidaRequest>, confirmOrdersViewModel: ConfirmOrdersViewModel) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
@@ -128,14 +131,16 @@ fun ShowMenu(comidas: List<ComidaRequest>) {
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(comidas) { comida ->
-            CardFood(comida)
+            CardFood(comida, confirmOrdersViewModel)
         }
     }
 }
 
 
 @Composable
-fun CardFood(comida: ComidaRequest) {
+fun CardFood(comida: ComidaRequest, confirmOrdersViewModel: ConfirmOrdersViewModel) {
+var showDialog by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -168,17 +173,30 @@ fun CardFood(comida: ComidaRequest) {
                     Text(text = "$ ${comida.precio}")
                 }
             }
+                Text(
+                    text = "Pedir",
+                    color = Color.Blue,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(12.dp)
+                        .clickable {
+                            confirmOrdersViewModel.setSelectedComida(comida)
+                            showDialog = true
+                        }
+                )
 
-            Text(
-                text = "Agregar",
-                color = Color.Blue,
-                fontWeight = FontWeight.Medium,
-                fontSize = 14.sp,
-                modifier = Modifier
-                    .align(androidx.compose.ui.Alignment.BottomEnd)
-                    .padding(12.dp)
-                    .clickable {  }
-            )
         }
+    }
+
+    if (showDialog) {
+        ConfirmDialog(
+            comida = comida,
+            onDismiss = {
+                showDialog = false
+                confirmOrdersViewModel.clearSelectedComida()
+            }
+        )
     }
 }
