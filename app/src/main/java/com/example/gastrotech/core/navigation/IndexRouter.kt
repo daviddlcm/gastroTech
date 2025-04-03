@@ -7,12 +7,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import com.example.gastrotech.account.presentation.view.AccountScreen
 import com.example.gastrotech.account.presentation.viewModel.LoginViewModel
 import com.example.gastrotech.carts.presentation.view.CartScreen
 import com.example.gastrotech.carts.presentation.viewModel.CartViewModel
 import com.example.gastrotech.confirmOrders.presentation.viewModel.ConfirmOrdersViewModel
 import com.example.gastrotech.core.domain.constans.Routes
+import com.example.gastrotech.core.service.Vibration
 import com.example.gastrotech.home.presentation.view.HomeScreen
 import com.example.gastrotech.home.presentation.viewModel.HomeViewModel
 import com.example.gastrotech.orders.presentation.view.OrdersScreen
@@ -28,7 +30,7 @@ fun IndexRouter(
 ){
     val route = rememberSaveable{ mutableStateOf(Routes.HomeRoute.route) }
     val isLoggedIn = rememberSaveable {  mutableStateOf(false) }
-
+    val context = LocalContext.current
     Scaffold(
         bottomBar = {
             if (route.value != Routes.RegisterRoute.route) {
@@ -40,7 +42,7 @@ fun IndexRouter(
             when(route.value){
                 Routes.HomeRoute.route -> HomeScreen(
                     homeViewModel = homeVM,
-                    confirmOrdersViewModel = ConfirmOrdersViewModel()
+                    confirmOrdersViewModel = ConfirmOrdersViewModel(vibration = Vibration(context))
                 )
                 Routes.AccountRoute.route -> AccountScreen(
                     loginViewModel = LoginViewModel(),

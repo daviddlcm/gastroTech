@@ -8,14 +8,18 @@ import androidx.lifecycle.viewModelScope
 import com.example.gastrotech.confirmOrders.data.model.ConfirmOrdersRequest
 import com.example.gastrotech.confirmOrders.data.repository.ConfirmOrdersRepository
 import com.example.gastrotech.core.dataStore.AuthManager
+import com.example.gastrotech.core.service.Vibration
 import com.example.gastrotech.home.data.model.ComidaRequest
 import kotlinx.coroutines.launch
 
-class ConfirmOrdersViewModel() : ViewModel() {
+class ConfirmOrdersViewModel(private val vibration: Vibration) : ViewModel() {
 
     private val repository = ConfirmOrdersRepository()
     private val _selectedComida = MutableLiveData<ComidaRequest?>()
     val selectedComida: LiveData<ComidaRequest?> = _selectedComida
+
+    private val _success = MutableLiveData<Boolean>(false)
+    var sucess: LiveData<Boolean> = _success
 
     fun setSelectedComida(comida: ComidaRequest) {
         _selectedComida.value = comida
@@ -56,6 +60,8 @@ class ConfirmOrdersViewModel() : ViewModel() {
 
                     if (response.isSuccess) {
                         Log.d("Pedido", "Pedido enviado con éxito: ${confirmOrder.detalle_pedido}")
+                        _success.value = true
+                        vibration.vibrate()
                         onSuccess()
                     } else {
                         Log.e("Pedido", "Error al enviar el pedido. Código: ${response}")

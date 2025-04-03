@@ -13,7 +13,9 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -21,10 +23,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gastrotech.confirmOrders.presentation.viewModel.ConfirmOrdersViewModel
 import com.example.gastrotech.core.dataStore.AuthManager
+import com.example.gastrotech.core.service.Vibration
 import com.example.gastrotech.home.data.model.ComidaRequest
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -38,6 +42,15 @@ fun ConfirmDialog(
     val scope = rememberCoroutineScope()
     var isLoading by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
+    val success by confirmOrdersViewModel.sucess.observeAsState(false)
+    val context = LocalContext.current
+    val vibration = Vibration(context)
+
+    LaunchedEffect(Unit) {
+        if(success){
+            vibration.vibrate()
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         AlertDialog(
