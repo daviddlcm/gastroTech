@@ -16,21 +16,34 @@ import com.example.gastrotech.core.domain.constans.Routes
 import com.example.gastrotech.ui.navbar.composable.itembar.ItemBar
 
 @Composable
-fun NavBar(route : MutableState<String>){
+fun NavBar(route: MutableState<String>, isLoggedIn: Boolean) {
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
-        modifier = Modifier.background(MaterialTheme.colorScheme.primary)
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.primary)
             .padding(12.dp)
             .fillMaxWidth()
     ) {
-        for(page in Routes.pages){
-            ItemBar(
-                page,
-                selected = route.value == page.route,
-                modifier = Modifier.clickable {
-                    route.value = page.route
+        for (page in Routes.pages) {
+            if (page.route == Routes.OrdersRoute.route) {
+                if (isLoggedIn) {
+                    ItemBar(
+                        page,
+                        selected = route.value == page.route,
+                        modifier = Modifier.clickable {
+                            route.value = page.route
+                        }
+                    )
                 }
-            )
+            } else {
+                ItemBar(
+                    page,
+                    selected = route.value == page.route,
+                    modifier = Modifier.clickable {
+                        route.value = page.route
+                    }
+                )
+            }
         }
     }
 }

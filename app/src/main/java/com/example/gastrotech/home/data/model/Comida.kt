@@ -1,8 +1,19 @@
 package com.example.gastrotech.home.data.model
 
-data class Comida(
-    val nombre : String,
-    val precio: Int,
-    val descripcion: String,
+import com.google.gson.annotations.SerializedName
 
+
+data class ComidaRequest(
+    val id_producto: Int,
+    val nombre_producto: String,
+    val precio: String,
+    val descripcion: String,
+    val imagen: String,
+    val categoria: String,
+    val created_by: Int
+)
+
+data class ComidaResponse(
+    @SerializedName("data")
+    val comidas: List<ComidaRequest>
 )
