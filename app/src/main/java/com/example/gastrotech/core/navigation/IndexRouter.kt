@@ -42,7 +42,7 @@ fun IndexRouter(
             when(route.value){
                 Routes.HomeRoute.route -> HomeScreen(
                     homeViewModel = homeVM,
-                    confirmOrdersViewModel = ConfirmOrdersViewModel(vibration = Vibration(context))
+                    confirmOrdersViewModel = ConfirmOrdersViewModel()
                 )
                 Routes.AccountRoute.route -> AccountScreen(
                     loginViewModel = LoginViewModel(),

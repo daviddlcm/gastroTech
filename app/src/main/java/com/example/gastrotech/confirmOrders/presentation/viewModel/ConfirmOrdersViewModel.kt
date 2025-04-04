@@ -12,7 +12,7 @@ import com.example.gastrotech.core.service.Vibration
 import com.example.gastrotech.home.data.model.ComidaRequest
 import kotlinx.coroutines.launch
 
-class ConfirmOrdersViewModel(private val vibration: Vibration) : ViewModel() {
+class ConfirmOrdersViewModel() : ViewModel() {
 
     private val repository = ConfirmOrdersRepository()
     private val _selectedComida = MutableLiveData<ComidaRequest?>()
@@ -61,7 +61,6 @@ class ConfirmOrdersViewModel(private val vibration: Vibration) : ViewModel() {
                     if (response.isSuccess) {
                         Log.d("Pedido", "Pedido enviado con éxito: ${confirmOrder.detalle_pedido}")
                         _success.value = true
-                        vibration.vibrate()
                         onSuccess()
                     } else {
                         Log.e("Pedido", "Error al enviar el pedido. Código: ${response}")

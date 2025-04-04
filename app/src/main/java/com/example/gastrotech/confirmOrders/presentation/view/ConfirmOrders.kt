@@ -44,13 +44,7 @@ fun ConfirmDialog(
     var message by remember { mutableStateOf("") }
     val success by confirmOrdersViewModel.sucess.observeAsState(false)
     val context = LocalContext.current
-    val vibration = Vibration(context)
 
-    LaunchedEffect(Unit) {
-        if(success){
-            vibration.vibrate()
-        }
-    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         AlertDialog(
@@ -90,6 +84,7 @@ fun ConfirmDialog(
                             confirmOrdersViewModel.setSelectedComida(comida)
                             confirmOrdersViewModel.confirmarPedido(
                                 onSuccess = {
+                                    Vibration(context).vibrate()
                                     scope.launch {
                                         message = "Pedido enviado con éxito"
                                         isLoading = false
